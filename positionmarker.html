@@ -315,7 +315,7 @@
                 this.options = options;
                 this.init = function () {
                     setInterval(function () {
-                        ajax("GET", "http://webapigpstrackerdev.azurewebsites.net/api/v1/device/getdevicelocation/" + self.options.DeviceId, null, false, function (data) {
+                        ajax("GET", "http://localhost:54956/api/v1/device/getdevicelocation/" + self.options.DeviceId, null, false, function (data) {
 
                             self.options.CurrentPositionMarker.setPosition(
                             new google.maps.LatLng(
@@ -333,15 +333,16 @@
             }
 
             this.init = function () {
-                var getDeviceList = function () {
-                    ajax("GET", "http://webapigpstrackerdev.azurewebsites.net/api/v1/device/getdevicelist", null, true,
+
+                //getDeviceList();
+                setInterval(function () {
+                    ajax("GET", "http://localhost:54956/api/v1/device/getdevicelist", null, true,
                         function (data) {
                             for (var device in data) {
                                 self.device = data[device];
-                                if (self.deviceList.indexOf(device) === -1) {
-                                    ajax("GET", "http://webapigpstrackerdev.azurewebsites.net/api/v1/device/getdevicelocation/" + self.device.Id, null, false,
+                                if (self.deviceList.map(function (x) { return x.Id; }).indexOf(self.device.Id) === -1) {
+                                    ajax("GET", "http://localhost:54956/api/v1/device/getdevicelocation/" + self.device.Id, null, false,
                                         function (data) {
-                                            debugger;
                                             var currentPositionMarker = new google.maps.Marker({
                                                 map: self.map,
                                                 position: new google.maps.LatLng(
@@ -369,15 +370,13 @@
                         },
                         function (error) {
                         });
-                }
-                //getDeviceList();
-                setInterval(getDeviceList(), 5000);
+                }, 1000);
 
             }
             self.InitMap();
             self.init();
         }
-        
+
         mapMarker();
 
     </script>
